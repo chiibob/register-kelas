@@ -162,10 +162,28 @@ details>*+*{margin-top:8px}
 .rangebar div{text-align:center}
 
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-.tabbar .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
-.tabbar button{min-height:58px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:0;color:var(--muted);font-size:12px;font-weight:600}
+.tabbar .wrap{display:grid;grid-template-columns:repeat(5,1fr)}
+.tabbar button{min-height:58px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:0;color:var(--muted);font-size:11px;font-weight:600}
 .tabbar button[aria-current="page"]{color:var(--accent)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom,0px));width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;z-index:20}
+.lt{display:inline-grid;place-items:center;min-width:48px;height:44px;padding:0 10px;border-radius:10px;font:700 22px var(--font-display)}
+.lt.A{background:var(--h-soft);color:var(--h)}.lt.B{background:var(--i-soft);color:var(--i)}
+.lt.C{background:var(--s-soft);color:var(--s)}.lt.D{background:var(--a-soft);color:var(--a)}
+.lt.none{background:var(--bg);color:var(--muted)}
+.auto{display:grid;place-items:center;height:44px;border-radius:10px;background:var(--bg);font:700 20px var(--font-display);font-variant-numeric:tabular-nums}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.check{display:flex;align-items:center;gap:10px;min-height:44px}
+.check input{width:22px;height:22px;accent-color:var(--accent);flex:none}
+.wheelcard{padding:12px 8px}
+#wheel{display:block;width:min(100%,360px);aspect-ratio:1;margin:0 auto}
+.btn.big{min-height:52px;font-size:17px}
+.bigname{font:700 28px/1.2 var(--font-display);overflow-wrap:anywhere;text-wrap:balance}
+.resultcard{text-align:center;align-items:center;min-height:92px;justify-content:center}
+.lcount{display:flex!important;flex-wrap:wrap;justify-content:center;gap:2px 12px;font-size:16px!important;line-height:1.5!important}
+.crow.info{background:var(--accent-soft)}
+.ol{margin:0;padding-left:28px}.ol li{padding:4px 0}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{padding:4px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:13px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -179,6 +197,7 @@ details>*+*{margin-top:8px}
 <nav class="tabbar" aria-label="Sections"><div class="wrap">
   <button data-tab="attendance"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12l2 2 4-4"/></svg>Attendance</button>
   <button data-tab="grades"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Grades</button>
+  <button data-tab="quiz"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v8l5.5 5.5M4 12h8"/></svg>Quiz</button>
   <button data-tab="summary"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Summary</button>
   <button data-tab="students"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M17 14.3c2.4.2 4 2 4 4.7"/></svg>Students</button>
 </div></nav>
@@ -193,6 +212,8 @@ var STATUS=[{c:'H',id:'Hadir'},{c:'S',id:'Sakit'},{c:'I',id:'Izin'},{c:'A',id:'A
 var SCORES=[{k:'k',id:'Kognitif',ab:'Kog'},{k:'p',id:'Psikomotorik',ab:'Psi'},{k:'a',id:'Afektif',ab:'Afe'}];
 var BASIC=[{key:'perkalian',name:'Perkalian'},{key:'pembagian',name:'Pembagian'},{key:'pecahan',name:'Pecahan'},{key:'desimal',name:'Desimal'},{key:'persen',name:'Persen'},{key:'konversi',name:'Konversi'}];
 var KIND_NAME={basic:'Basic math test',material:'Material test'};
+var DEFAULT_SET={k:'basic',p:'basic',minPct:75,aPct:90,bPct:80,meetings:15};
+var VERSION='Version 3 · 16 Nov 2026';
 var SVG='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
 var ICON_L=SVG+'<path d="M15 6l-6 6 6 6"/></svg>';
 var ICON_R=SVG+'<path d="M9 6l6 6-6 6"/></svg>';
@@ -213,17 +234,28 @@ function fmt(v){return v==null?'—':String(Number(v.toFixed(1)));}
 function validScore(v){return /^\d{1,3}(\.\d{0,2})?$/.test(v)&&Number(v)<=100;}
 
 /* ---------- data ---------- */
+function defaultBasic(cid){return BASIC.map(function(b){return {id:uid(),classId:cid,name:b.name};});}
 function seed(){
   var cid=uid();
   var st=NAMES.map(function(n){return {id:uid(),classId:cid,name:n,ex:true};});
   var vals=[[82,78,90],[91,85,88],[67,72,80],null,[74,80,85],[88,90,92]];
   var g={};
   vals.forEach(function(v,i){if(v)g[st[i].id]={k:v[0],p:v[1],a:v[2]};});
-  return {v:2,classes:[{id:cid,name:'Kelas 7A'}],students:st,attendance:{},grades:g,materials:[],tests:{},notes:{},currentClass:cid};
+  return {v:3,classes:[{id:cid,name:'Kelas 7A'}],students:st,attendance:{},grades:g,materials:[],basicTypes:defaultBasic(cid),tests:{},notes:{},settings:Object.assign({},DEFAULT_SET),currentClass:cid};
 }
 function normalize(o){
-  o.v=2;o.attendance=o.attendance||{};o.grades=o.grades||{};o.tests=o.tests||{};o.notes=o.notes||{};
+  o.v=3;o.attendance=o.attendance||{};o.grades=o.grades||{};o.tests=o.tests||{};o.notes=o.notes||{};
   o.materials=Array.isArray(o.materials)?o.materials:[];
+  o.settings=Object.assign({},DEFAULT_SET,o.settings||{});
+  if(!Array.isArray(o.basicTypes)){
+    o.basicTypes=[];
+    o.classes.forEach(function(c){
+      var map={};
+      BASIC.forEach(function(b){var id=uid();map[b.key]=id;o.basicTypes.push({id:id,classId:c.id,name:b.name});});
+      var t=o.tests[c.id];
+      if(t&&t.basic){var nb={};for(var k in t.basic){nb[map[k]||k]=t.basic[k];}t.basic=nb;}
+    });
+  }
   if(!o.classes.some(function(c){return c.id===o.currentClass;}))o.currentClass=o.classes[0].id;
   return o;
 }
@@ -244,28 +276,27 @@ function attStats(sid){
   for(var d in a){var c=a[d][sid];if(c){t++;if(c==='H')h++;}}
   return {h:h,t:t};
 }
-function studentAvg(sid){
-  var g=S.grades[sid]||{},v=[];
-  SCORES.forEach(function(s){if(typeof g[s.k]==='number')v.push(g[s.k]);});
+function studentAvg(sid,r){
+  var v=[];['k','p'].forEach(function(k){var x=aspectNum(sid,k,r).v;if(x!=null)v.push(x);});
   return mean(v);
 }
-function classAvgs(st){
-  var out={};
-  SCORES.forEach(function(s){
-    var v=[];st.forEach(function(x){var g=S.grades[x.id];if(g&&typeof g[s.k]==='number')v.push(g[s.k]);});
-    out[s.k]=mean(v);
+function classAvgs(st,r){
+  var out={k:[],p:[],L:{A:0,B:0,C:0,D:0}};
+  st.forEach(function(s){
+    ['k','p'].forEach(function(k){var x=aspectNum(s.id,k,r).v;if(x!=null)out[k].push(x);});
+    var g=attGrade(s.id,r);if(g.letter)out.L[g.letter]++;
   });
+  out.k=mean(out.k);out.p=mean(out.p);
   return out;
 }
 /* tests[classId][kind][topic][date][studentId] = score */
+function typeList(kind){return kind==='basic'?S.basicTypes:S.materials;}
 function topicsFor(kind){
-  if(kind==='basic')return BASIC.map(function(b){return {key:b.key,name:b.name};});
   var id=cls().id;
-  return S.materials.filter(function(m){return m.classId===id;}).map(function(m){return {key:m.id,name:m.name};});
+  return typeList(kind).filter(function(m){return m.classId===id;}).map(function(m){return {key:m.id,name:m.name};});
 }
 function topicName(kind,key){
-  var list=kind==='basic'?BASIC.map(function(b){return {key:b.key,name:b.name};}):S.materials.map(function(m){return {key:m.id,name:m.name};});
-  var f=list.filter(function(t){return t.key===key;})[0];
+  var f=typeList(kind).filter(function(t){return t.id===key;})[0];
   return f?f.name:'(removed)';
 }
 function sheetData(kind,topic,date){
@@ -286,9 +317,43 @@ function setTest(kind,topic,date,sid,val){
   if(!Object.keys(t).length)delete S.tests[cid];
 }
 
+/* ---------- automatic aspect scores ---------- */
+function semesterOf(a){
+  var y=a.getFullYear(),s,e,label,sub;
+  if(a.getMonth()>=6){s=new Date(y,6,1);e=new Date(y,11,31);label='Semester 1 · '+y+'/'+(y+1);sub='July – December '+y;}
+  else{s=new Date(y,0,1);e=new Date(y,5,30);label='Semester 2 · '+(y-1)+'/'+y;sub='January – June '+y;}
+  return {start:iso(s),end:iso(e),label:label,sub:sub};
+}
+function aRange(){return semesterOf(parseDate(ui.adate));}
+function srcKinds(src){return src==='basic'?['basic']:src==='material'?['material']:src==='both'?['basic','material']:[];}
+function testValues(sid,kinds,r){
+  var t=S.tests[cls().id]||{},out=[];
+  kinds.forEach(function(kind){
+    var tops=t[kind]||{};
+    for(var tp in tops)for(var d in tops[tp]){
+      if(d<r.start||d>r.end)continue;
+      var v=tops[tp][d][sid];if(typeof v==='number')out.push(v);
+    }
+  });
+  return out;
+}
+function aspectNum(sid,k,r){
+  var src=S.settings[k];
+  if(src==='manual'){var g=S.grades[sid]||{};return {v:typeof g[k]==='number'?g[k]:null,n:null};}
+  var v=testValues(sid,srcKinds(src),r);
+  return {v:mean(v),n:v.length};
+}
+function attGrade(sid,r){
+  var a=S.attendance[cls().id]||{},h=0,t=0,d,c,set=S.settings,letter=null;
+  for(d in a){if(d<r.start||d>r.end)continue;c=a[d][sid];if(c){t++;if(c==='H')h++;}}
+  if(t){letter=h*100<set.minPct*t?'D':h*100>=set.aPct*t?'A':h*100>=set.bPct*t?'B':'C';}
+  return {h:h,t:t,pct:t?h*100/t:null,letter:letter,prov:t>0&&t<set.meetings};
+}
 /* ---------- ui state ---------- */
-var ui={tab:'attendance',date:todayStr(),follow:true,gdate:todayStr(),gsub:'basic',topic:{basic:'perkalian',material:null},
-  detail:null,period:'week',pdate:todayStr(),confirm:null,matOpen:false,backupText:'',restoreDraft:'',summaryText:''};
+var ui={tab:'attendance',date:todayStr(),follow:true,gdate:todayStr(),gsub:'basic',topic:{basic:null,material:null},
+  detail:null,period:'week',pdate:todayStr(),adate:todayStr(),confirm:null,topicOpen:false,setOpen:false,importPrev:null,
+  backupText:'',restoreDraft:'',summaryText:'',
+  quiz:{presentOnly:false,noRepeat:true,history:[],result:null,theta:0,spinning:false,frozen:null,order:null,token:0,sig:''}};
 var toastTimer;
 function toast(m){var el=$('#toast');el.textContent=m;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.hidden=true;},3200);}
 function setDate(d){ui.date=d;ui.follow=(d===todayStr());ui.confirm=null;render(false);}
@@ -351,8 +416,9 @@ function viewGrades(){
     return '<button data-act="gsub" data-sub="'+x[0]+'" aria-pressed="'+(ui.gsub===x[0])+'">'+x[1]+'</button>';}).join('')+'</div>';
   if(!st.length)return h+emptyState();
   var isToday=ui.gdate===todayStr();
-  h+=dateBar({date:ui.gdate,inputId:'gDateInput',prev:'gprev',next:'gnext',subCls:isToday?'today':'away',sub:isToday?'Today · scores are saved with this date':'Not today · scores are saved with this date'});
-  if(!isToday)h+='<button class="btn" data-act="gtoday">Use today’s date</button>';
+  var needDate=ui.gsub!=='aspects'||S.settings.k==='manual'||S.settings.p==='manual';
+  if(needDate)h+=dateBar({date:ui.gdate,inputId:'gDateInput',prev:'gprev',next:'gnext',subCls:isToday?'today':'away',sub:isToday?'Today · scores are saved with this date':'Not today · scores are saved with this date'});
+  if(needDate&&!isToday)h+='<button class="btn" data-act="gtoday">Use today’s date</button>';
   h+=ui.gsub==='aspects'?viewAspects(st):viewSheet(ui.gsub,st);
   return h;
 }
@@ -360,15 +426,16 @@ function statsText(sheet,st){
   var v=[];st.forEach(function(s){if(typeof sheet[s.id]==='number')v.push(sheet[s.id]);});
   return v.length?'Class average '+fmt(mean(v))+' · '+v.length+' of '+st.length+' scored':'No scores on this date yet · '+st.length+' students';
 }
-function materialManager(topics,cur){
-  var h='<section class="card pad"><details id="matDetails"'+((ui.matOpen||!topics.length)?' open':'')+'><summary>Add or edit materials</summary>'+
-    '<form id="addMaterial" class="inline"><input class="txt" id="newMaterial" type="text" placeholder="New material, e.g. Aljabar" autocomplete="off" aria-label="New material name"><button class="btn primary" type="submit">Add</button></form>';
+function topicManager(kind,topics,cur){
+  var isB=kind==='basic',nm=isB?'test type':'material';
+  var h='<section class="card pad"><details id="topicDetails"'+((ui.topicOpen||!topics.length)?' open':'')+'><summary>'+(isB?'Add or edit test types':'Add or edit materials')+'</summary>'+
+    '<form id="addTopic" class="inline"><input class="txt" id="newTopic" type="text" placeholder="'+(isB?'New test type, e.g. Akar kuadrat':'New material, e.g. Aljabar')+'" autocomplete="off" aria-label="New name"><button class="btn primary" type="submit">Add</button></form>';
   if(cur){
-    h+='<label class="lab" for="matName">Rename the selected material</label><input class="txt" id="matName" type="text" value="'+esc(topicName('material',cur))+'">';
-    if(ui.confirm&&ui.confirm.type==='material'){
-      h+='<div class="card crow"><p>Delete this material and every score entered under it?</p><div class="actions"><button class="btn danger" data-act="matdel-yes">Delete material</button><button class="btn" data-act="cancel">Cancel</button></div></div>';
+    h+='<label class="lab" for="topicName">Rename the selected '+nm+'</label><input class="txt" id="topicName" type="text" value="'+esc(topicName(kind,cur))+'">';
+    if(ui.confirm&&ui.confirm.type==='topic'){
+      h+='<div class="card crow"><p>Delete this '+nm+' and every score entered under it?</p><div class="actions"><button class="btn danger" data-act="topicdel-yes">Delete</button><button class="btn" data-act="cancel">Cancel</button></div></div>';
     }else{
-      h+='<div class="actions"><button class="btn danger" data-act="matdel">Delete this material</button></div>';
+      h+='<div class="actions"><button class="btn danger" data-act="topicdel">Delete this '+nm+'</button></div>';
     }
   }
   return h+'</details></section>';
@@ -378,10 +445,8 @@ function viewSheet(kind,st){
   if(!topics.some(function(t){return t.key===cur;}))cur=ui.topic[kind]=topics.length?topics[0].key:null;
   if(topics.length)h+='<div class="chips" role="group" aria-label="Topic">'+topics.map(function(t){
     return '<button class="chip'+(hasScores(kind,t.key,ui.gdate)?' has':'')+'" data-act="topic" data-topic="'+t.key+'" aria-pressed="'+(t.key===cur)+'">'+esc(t.name)+'</button>';}).join('')+'</div>';
-  if(kind==='material'){
-    if(!topics.length)h+='<p class="hint">No materials yet. Add the first one, for example Aljabar or Eksponen, then enter scores for it.</p>';
-    h+=materialManager(topics,cur);
-  }
+  if(!topics.length)h+='<p class="hint">'+(kind==='basic'?'No test types yet. Add the first one, for example Perkalian, then enter scores for it.':'No materials yet. Add the first one, for example Aljabar or Eksponen, then enter scores for it.')+'</p>';
+  h+=topicManager(kind,topics,cur);
   if(!cur)return h;
   var sheet=sheetData(kind,cur,ui.gdate);
   h+='<div class="card list"><div class="lhead"><div><h2>'+esc(topicName(kind,cur))+'</h2><p class="hint">'+KIND_NAME[kind]+' · '+esc(shortDate(ui.gdate))+'</p><p class="hint" id="sheetStats">'+statsText(sheet,st)+'</p></div></div>'+
@@ -399,21 +464,42 @@ function viewSheet(kind,st){
   h+='<p class="hint">Every score keeps the date shown above. Change the date first to enter or fix an earlier test. Retakes on another date are kept as separate entries.</p>';
   return h;
 }
+function gradeChip(g){
+  if(!g.letter)return '<span class="lt none" aria-label="No attendance yet">—</span>';
+  return '<span class="lt '+g.letter+'" aria-label="Grade '+g.letter+'">'+g.letter+'</span>';
+}
+function srcLabel(src){return {manual:'Manual',basic:'Basic math tests',material:'Material tests',both:'Basic + material tests'}[src];}
+function settingsCard(){
+  var st=S.settings;
+  function sel(id,label,val){return '<div class="field"><label for="'+id+'">'+label+'</label><select class="txt" id="'+id+'">'+['basic','material','both','manual'].map(function(o){return '<option value="'+o+'"'+(val===o?' selected':'')+'>'+srcLabel(o)+'</option>';}).join('')+'</select></div>';}
+  function num(id,label,val){return '<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="number" inputmode="decimal" min="1" max="100" step="any" value="'+val+'"></div>';}
+  return '<section class="card pad"><details id="setDetails"'+(ui.setOpen?' open':'')+'><summary>Grading rules</summary>'+
+    '<div class="grid2">'+sel('setK','Kognitif comes from',st.k)+sel('setP','Psikomotorik comes from',st.p)+'</div>'+
+    '<div class="grid2">'+num('setMeet','Meetings per semester',st.meetings)+num('setMin','Minimum attendance %',st.minPct)+num('setA','Grade A from %',st.aPct)+num('setB','Grade B from %',st.bPct)+'</div>'+
+    '<p class="hint">Afektif comes from attendance. Below the minimum is D. From the minimum up to the B line is C, then B, then A from the A line. Only H (hadir) counts as attended.</p></details></section>';
+}
 function viewAspects(st){
-  var avg=classAvgs(st);
-  var h='<section class="card pad"><h2>Class average</h2><div class="three">'+
-    SCORES.map(function(s){return '<div><span class="lab">'+s.id+'</span><b id="ca-'+s.k+'">'+fmt(avg[s.k])+'</b></div>';}).join('')+
-    '</div><p class="hint">Kognitif = knowledge · Psikomotorik = skills · Afektif = attitude. Enter 0 to 100. Each score is stamped with the date above when you change it.</p></section>';
+  var r=aRange(),avg=classAvgs(st,r);
+  var h='<section class="card"><div class="rangebar"><button class="iconbtn" data-act="aprev" aria-label="Previous semester">'+ICON_L+'</button><div><div class="dlabel">'+esc(r.label)+'</div><div class="dsub">'+r.sub+'</div></div><button class="iconbtn" data-act="anext" aria-label="Next semester">'+ICON_R+'</button></div></section>';
+  if(semesterOf(new Date()).start!==r.start)h+='<button class="btn" data-act="athis">Back to this semester</button>';
+  h+=settingsCard();
+  h+='<section class="card pad"><h2>Class summary</h2><div class="three"><div><span class="lab">Kognitif</span><b id="ca-k">'+fmt(avg.k)+'</b></div><div><span class="lab">Psikomotorik</span><b id="ca-p">'+fmt(avg.p)+'</b></div><div><span class="lab">Afektif</span><b class="lcount">'+['A','B','C','D'].map(function(l){return '<span>'+l+' '+avg.L[l]+'</span>';}).join('')+'</b></div></div></section>';
   h+='<div class="card list">'+st.map(function(s,i){
-    var g=S.grades[s.id]||{},a=attStats(s.id);
-    var att=a.t?'Hadir '+Math.round(a.h/a.t*100)+'% · '+a.h+' of '+a.t+' days':'No attendance marked yet';
-    return '<div class="grow"><div class="gtop"><div class="gname">'+(i+1)+'. <button class="linkname" style="flex:none;display:inline;padding:0" data-act="open-student" data-sid="'+s.id+'">'+esc(s.name)+'</button><div class="att">'+att+'</div></div>'+
-      '<div class="gavg"><span>Rata-rata</span><b id="av-'+s.id+'">'+fmt(studentAvg(s.id))+'</b></div></div>'+
-      '<div class="gin">'+SCORES.map(function(x){
-        var has=typeof g[x.k]==='number';
-        return '<div class="field"><label for="g-'+s.id+'-'+x.k+'">'+x.id+'</label><input id="g-'+s.id+'-'+x.k+'" data-sid="'+s.id+'" data-k="'+x.k+'" inputmode="decimal" autocomplete="off" value="'+(has?g[x.k]:'')+'"><div class="cap" id="dt-'+s.id+'-'+x.k+'">'+(has?(g['d'+x.k]?shortDate(g['d'+x.k]):'No date'):'&nbsp;')+'</div></div>';
-      }).join('')+'</div></div>';
+    var g=S.grades[s.id]||{},ag=attGrade(s.id,r);
+    var cells=['k','p'].map(function(k){
+      var label=k==='k'?'Kognitif':'Psikomotorik',an=aspectNum(s.id,k,r);
+      if(S.settings[k]==='manual'){
+        var has=typeof g[k]==='number';
+        return '<div class="field"><label for="g-'+s.id+'-'+k+'">'+label+'</label><input id="g-'+s.id+'-'+k+'" data-sid="'+s.id+'" data-k="'+k+'" inputmode="decimal" autocomplete="off" value="'+(has?g[k]:'')+'"><div class="cap" id="dt-'+s.id+'-'+k+'">'+(has?(g['d'+k]?esc(shortDate(g['d'+k])):'No date'):'&nbsp;')+'</div></div>';
+      }
+      return '<div class="field"><span class="lab">'+label+'</span><div class="auto">'+fmt(an.v)+'</div><div class="cap">'+(an.n?an.n+' score'+(an.n===1?'':'s'):'no scores yet')+'</div></div>';
+    }).join('');
+    var capA=ag.t?fmt(ag.pct)+'% · '+ag.h+' of '+ag.t+' days'+(ag.prov?' · provisional':''):'no attendance yet';
+    return '<div class="grow"><div class="gtop"><div class="gname">'+(i+1)+'. <button class="linkname" style="flex:none;display:inline;padding:0" data-act="open-student" data-sid="'+s.id+'">'+esc(s.name)+'</button></div>'+
+      '<div class="gavg"><span>Rata-rata</span><b id="av-'+s.id+'">'+fmt(studentAvg(s.id,r))+'</b></div></div>'+
+      '<div class="gin">'+cells+'<div class="field"><span class="lab">Afektif</span>'+gradeChip(ag)+'<div class="cap">'+capA+'</div></div></div></div>';
   }).join('')+'</div>';
+  h+='<p class="hint">Kognitif and psikomotorik are the average of every score in the chosen tests during the semester shown. Rata-rata is the average of those two. Afektif comes from attendance. Provisional means fewer than '+S.settings.meetings+' meetings are recorded so far.</p>';
   return h;
 }
 
@@ -438,10 +524,10 @@ function viewDetail(sid){
   var h='<div class="actions"><button class="btn" data-act="back">‹ Back</button></div>';
   h+='<section class="card pad"><h2 class="big">'+esc(s.name)+'</h2><p class="hint">'+esc(cls().name)+' · '+(a.t?'Hadir '+Math.round(a.h/a.t*100)+'% ('+a.h+' of '+a.t+' days)':'No attendance marked yet')+'</p></section>';
   h+='<section class="card pad"><h2>Note</h2><label class="lab" for="noteText">About '+esc(s.name)+'</label><textarea class="txt" id="noteText" data-sid="'+sid+'" rows="5" placeholder="Anything worth remembering about this student">'+esc(S.notes[sid]||'')+'</textarea><p class="hint">Saves as you type.</p></section>';
-  h+='<section class="card pad"><h2>Aspects</h2><div class="three">'+SCORES.map(function(x){
-    var has=typeof g[x.k]==='number';
-    return '<div><span class="lab">'+x.id+'</span><b>'+(has?g[x.k]:'—')+'</b><div class="cap">'+(has?(g['d'+x.k]?shortDate(g['d'+x.k]):'No date'):'&nbsp;')+'</div></div>';
-  }).join('')+'</div></section>';
+  var ar=aRange(),ag=attGrade(sid,ar);
+  h+='<section class="card pad"><h2>Aspects</h2><p class="hint">'+esc(ar.label)+'</p><div class="three">'+
+    ['k','p'].map(function(k){var an=aspectNum(sid,k,ar);return '<div><span class="lab">'+(k==='k'?'Kognitif':'Psikomotorik')+'</span><b>'+fmt(an.v)+'</b><div class="cap">'+(an.n?an.n+' score'+(an.n===1?'':'s'):'&nbsp;')+'</div></div>';}).join('')+
+    '<div><span class="lab">Afektif</span>'+gradeChip(ag)+'<div class="cap">'+(ag.t?fmt(ag.pct)+'% · '+ag.h+'/'+ag.t:'&nbsp;')+'</div></div></div></section>';
   ['basic','material'].forEach(function(kind){
     var groups=studentTests(sid,kind);
     h+='<section class="card list"><div class="lhead"><h2>'+KIND_NAME[kind]+'s</h2></div>';
@@ -468,9 +554,7 @@ function periodRange(){
     s=new Date(a.getFullYear(),a.getMonth(),1);e=new Date(a.getFullYear(),a.getMonth()+1,0);
     label=s.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
   }else{
-    var y=a.getFullYear();
-    if(a.getMonth()>=6){s=new Date(y,6,1);e=new Date(y,11,31);label='Semester 1 · '+y+'/'+(y+1);sub='July – December '+y;}
-    else{s=new Date(y,0,1);e=new Date(y,5,30);label='Semester 2 · '+(y-1)+'/'+y;sub='January – June '+y;}
+    return semesterOf(a);
   }
   return {start:iso(s),end:iso(e),label:label,sub:sub};
 }
@@ -508,10 +592,11 @@ function computeSummary(){
   sessions.sort(function(x,y){return x.date<y.date?-1:x.date>y.date?1:0;});
   rows.forEach(function(x){
     var g=S.grades[x.s.id]||{};
-    SCORES.forEach(function(sc){
-      var dd=g['d'+sc.k];
-      x.asp[sc.k]=(typeof g[sc.k]==='number'&&dd&&dd>=r.start&&dd<=r.end)?g[sc.k]:null;
+    ['k','p'].forEach(function(k){
+      if(S.settings[k]==='manual'){var dd=g['d'+k];x.asp[k]=(typeof g[k]==='number'&&dd&&dd>=r.start&&dd<=r.end)?g[k]:null;}
+      else x.asp[k]=aspectNum(x.s.id,k,r).v;
     });
+    x.asp.a=ui.period==='semester'?attGrade(x.s.id,r).letter:null;
   });
   return {r:r,rows:rows,days:days,sessions:sessions};
 }
@@ -535,10 +620,10 @@ function viewSummary(){
   h+='<section class="card list"><div class="lhead"><div><h2>Tests in this period</h2><p class="hint">'+(m.sessions.length?m.sessions.length+' test'+(m.sessions.length===1?'':'s'):'No test scores in this period')+'</p></div></div>'+
     m.sessions.map(function(x){return '<div class="entry"><span>'+esc(x.name)+'<small>'+KIND_NAME[x.kind]+' · '+esc(shortDate(x.date))+' · '+x.n+' scored</small></span><b>'+fmt(x.avg)+'</b></div>';}).join('')+'</section>';
   h+='<section class="card"><div class="lhead"><div><h2>Scores</h2><p class="hint">Test columns are the average of that period’s tests.</p></div></div><div class="scroll"><table class="tbl"><thead><tr><th class="l">Student</th><th>Basic</th><th>Material</th>'+SCORES.map(function(x){return '<th>'+x.ab+'</th>';}).join('')+'</tr></thead><tbody>'+
-    m.rows.map(function(x){return '<tr><td class="l">'+esc(x.s.name)+'</td><td>'+fmt(mean(x.b))+'</td><td>'+fmt(mean(x.m))+'</td>'+SCORES.map(function(sc){return '<td>'+fmt(x.asp[sc.k])+'</td>';}).join('')+'</tr>';}).join('')+
+    m.rows.map(function(x){return '<tr><td class="l">'+esc(x.s.name)+'</td><td>'+fmt(mean(x.b))+'</td><td>'+fmt(mean(x.m))+'</td>'+SCORES.map(function(sc){return '<td>'+(sc.k==='a'?(x.asp.a||'—'):fmt(x.asp[sc.k]))+'</td>';}).join('')+'</tr>';}).join('')+
     '</tbody></table></div></section>';
-  h+='<p class="hint">Kog = kognitif, Psi = psikomotorik, Afe = afektif. Aspect scores appear only if they were entered or changed in this period. % Hadir counts only days the student was marked. Semester 1 runs July to December, semester 2 January to June.</p>';
-  h+='<section class="card pad"><h2>Export</h2><p class="hint">The Excel file (.xlsx) holds the selected class: the summary for the period above, attendance for every date, basic and material test scores, aspects and notes. It opens in Microsoft Excel, WPS Office and Google Sheets.</p>'+
+  h+='<p class="hint">Kog = kognitif, Psi = psikomotorik, Afe = afektif. Kog and Psi are the average of the scores in this period for the tests chosen under Grading rules. Afe is the attendance grade and shows in the semester view only. % Hadir counts only days the student was marked. Semester 1 runs July to December, semester 2 January to June.</p>';
+  h+='<section class="card pad"><h2>Export</h2><p class="hint">The Excel file (.xlsx) holds the selected class: the summary for the period above, attendance for every date, basic and material test scores, aspects for the semester of the period above, and notes. It opens in Microsoft Excel, WPS Office and Google Sheets.</p>'+
     '<div class="actions"><button class="btn primary" data-act="xlsx">Export to Excel</button><button class="btn" data-act="copysum">Copy this summary</button></div></section>';
   if(ui.summaryText)h+='<p class="hint">Copying was blocked. Select the text below and copy it by hand.</p><textarea class="txt" id="summaryText" rows="6" readonly>'+esc(ui.summaryText)+'</textarea>';
   return h;
@@ -553,7 +638,7 @@ function summaryTSV(){
     var p=pct(x.c);
     L.push([i+1,x.s.name,x.c.H,x.c.S,x.c.I,x.c.A,p===null?'':p,
       x.b.length?fmt(mean(x.b)):'',x.m.length?fmt(mean(x.m)):'',
-      x.asp.k==null?'':x.asp.k,x.asp.p==null?'':x.asp.p,x.asp.a==null?'':x.asp.a].join('\t'));
+      x.asp.k==null?'':fmt(x.asp.k),x.asp.p==null?'':fmt(x.asp.p),x.asp.a||''].join('\t'));
   });
   return L.join('\n');
 }
@@ -564,6 +649,16 @@ function viewStudents(){
   h+='<section class="card pad"><h2>Add students to '+esc(c.name)+'</h2>'+
     '<form id="addForm" class="inline"><input class="txt" id="newName" type="text" placeholder="Student name" autocomplete="off" enterkeyhint="done" aria-label="Student name"><button class="btn primary" type="submit">Add</button></form>'+
     '<details><summary>Paste a whole class list</summary><textarea class="txt" id="bulk" rows="6" placeholder="One name per line" aria-label="Class list"></textarea><button class="btn" data-act="bulk">Add all names</button></details></section>';
+  h+='<section class="card pad"><h2>Import from Excel</h2><p class="hint">Names go into '+esc(c.name)+'. Download the template, type the names in it, then choose the file. CSV files work too.</p>'+
+    '<div class="actions"><button class="btn" data-act="template">Download template</button></div>'+
+    '<label class="lab" for="importFile">Excel (.xlsx) or CSV file</label><input class="file" type="file" id="importFile" accept=".xlsx,.csv,.txt,.tsv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/plain">';
+  if(ui.importPrev){
+    var ip=ui.importPrev,nn=ip.names.length;
+    h+='<div class="card crow info"><p><b>'+nn+' new name'+(nn===1?'':'s')+'</b> found in '+esc(ip.file)+(ip.skipped?' ('+ip.skipped+' already in this class)':'')+'.</p>'+
+      (nn?'<p class="hint">'+esc(ip.names.slice(0,6).join(', '))+(nn>6?', …':'')+'</p>':'')+
+      '<div class="actions"><button class="btn primary" data-act="import-yes"'+(nn?'':' disabled')+'>Add '+nn+' student'+(nn===1?'':'s')+'</button><button class="btn" data-act="import-cancel">Cancel</button></div></div>';
+  }
+  h+='</section>';
   h+='<section class="card list"><div class="lhead"><h2>Students<span class="count">'+st.length+'</span></h2><button class="btn ghost small" data-act="sort">Sort A–Z</button></div>';
   if(!st.length)h+='<p class="hint" style="padding:12px 14px">No students yet.</p>';
   st.forEach(function(s,i){
@@ -593,7 +688,7 @@ function viewStudents(){
   }else{
     h+='<div class="actions"><button class="btn" data-act="restore-ask">Restore</button></div>';
   }
-  h+='</section>';
+  h+='<p class="hint" style="padding-top:8px">'+VERSION+'</p></section>';
   return h;
 }
 function renderClassSel(){
@@ -605,9 +700,10 @@ function render(keepScroll){
   document.querySelectorAll('.tabbar button').forEach(function(b){b.setAttribute('aria-current',b.dataset.tab===ui.tab?'page':'false');});
   renderClassSel();
   var body=ui.detail?viewDetail(ui.detail):'';
-  if(!ui.detail)body=banner()+(ui.tab==='attendance'?viewAttendance():ui.tab==='grades'?viewGrades():ui.tab==='summary'?viewSummary():viewStudents());
+  if(!ui.detail)body=banner()+(ui.tab==='attendance'?viewAttendance():ui.tab==='grades'?viewGrades():ui.tab==='quiz'?viewQuiz():ui.tab==='summary'?viewSummary():viewStudents());
   $('#view').innerHTML=body;
   window.scrollTo(0,keepScroll?y:0);
+  if(!ui.detail&&ui.tab==='quiz')drawWheel();
 }
 
 /* ---------- file export: .xlsx and backup (no libraries, no internet needed) ---------- */
@@ -664,7 +760,8 @@ function sheetXml(sh){
     pane='<pane '+(fc?'xSplit="'+fc+'" ':'')+(fr?'ySplit="'+fr+'" ':'')+'topLeftCell="'+colName(fc+1)+(fr+1)+'" activePane="'+act+'" state="frozen"/>';
   }
   var cols='';
-  widths.forEach(function(w,i){cols+='<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+Math.max(7,w+3)+'" customWidth="1"/>';});
+  var mw=sh.minWidths||[],nc=Math.max(widths.length,mw.length);
+  for(var wi=0;wi<nc;wi++){cols+='<col min="'+(wi+1)+'" max="'+(wi+1)+'" width="'+Math.max(7,(widths[wi]||0)+3,mw[wi]||0)+'" customWidth="1"/>';}
   var data=sh.rows.map(function(row,ri){return '<row r="'+(ri+1)+'">'+row.map(function(c,i){return cellXml(c,ri+1,i);}).join('')+'</row>';}).join('');
   return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0">'+pane+'</sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>'+(cols?'<cols>'+cols+'</cols>':'')+'<sheetData>'+data+'</sheetData></worksheet>';
 }
@@ -696,7 +793,7 @@ function buildWorkbook(){
   rows=[[{v:'Ringkasan '+c.name,s:2}],['Periode',m.r.label],['Hari kehadiran tercatat',m.days],[],
     head(['No','Nama','Hadir','Sakit','Izin','Alpha','% Hadir','Rata-rata tes dasar','Rata-rata tes materi','Kognitif','Psikomotorik','Afektif'])];
   m.rows.forEach(function(x,n){
-    rows.push([n+1,x.s.name,x.c.H,x.c.S,x.c.I,x.c.A,pct(x.c),round1(mean(x.b)),round1(mean(x.m)),x.asp.k,x.asp.p,x.asp.a]);
+    rows.push([n+1,x.s.name,x.c.H,x.c.S,x.c.I,x.c.A,pct(x.c),round1(mean(x.b)),round1(mean(x.m)),round1(x.asp.k),round1(x.asp.p),x.asp.a||null]);
   });
   sheets.push({name:'Ringkasan',rows:rows,freezeCols:2,widthFrom:4});
   /* Kehadiran: every recorded date */
@@ -721,14 +818,15 @@ function buildWorkbook(){
     });
     sheets.push({name:kind==='basic'?'Nilai Tes Dasar':'Nilai Tes Materi',rows:rws,freezeRows:1,freezeCols:2});
   });
-  /* Aspek */
-  rows=[head(['No','Nama','Kognitif','Tanggal kognitif','Psikomotorik','Tanggal psikomotorik','Afektif','Tanggal afektif','Rata-rata'])];
+  /* Aspek: the semester of the period chosen on the Summary tab */
+  var sem=semesterOf(parseDate(ui.pdate));
+  rows=[[{v:'Nilai aspek '+c.name,s:2}],['Semester',sem.label],['Aturan','Afektif: minimal '+S.settings.minPct+'% hadir, A mulai '+S.settings.aPct+'%, B mulai '+S.settings.bPct+'%, di bawah minimum D'],[],
+    head(['No','Nama','Kognitif','Psikomotorik','Rata-rata','Hadir','Pertemuan tercatat','% Hadir','Afektif'])];
   st.forEach(function(s,n){
-    var g=S.grades[s.id]||{},r=[n+1,s.name];
-    SCORES.forEach(function(sc){var has=typeof g[sc.k]==='number';r.push(has?g[sc.k]:null);r.push(has&&g['d'+sc.k]?shortDate(g['d'+sc.k]):null);});
-    r.push(round1(studentAvg(s.id)));rows.push(r);
+    var kk=aspectNum(s.id,'k',sem).v,pp=aspectNum(s.id,'p',sem).v,ag=attGrade(s.id,sem);
+    rows.push([n+1,s.name,round1(kk),round1(pp),round1(studentAvg(s.id,sem)),ag.t?ag.h:null,ag.t||null,ag.pct==null?null:round1(ag.pct),ag.letter]);
   });
-  sheets.push({name:'Aspek',rows:rows,freezeRows:1,freezeCols:2});
+  sheets.push({name:'Aspek',rows:rows,freezeRows:5,freezeCols:2,widthFrom:4});
   /* Catatan */
   rows=[head(['No','Nama','Catatan'])];
   st.forEach(function(s,n){rows.push([n+1,s.name,{v:S.notes[s.id]||'',s:4}]);});
@@ -740,6 +838,223 @@ function saveFile(name,blob){
   var url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=name;a.style.display='none';document.body.appendChild(a);a.click();
   setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},4000);
+}
+
+/* ---------- import names from Excel (.xlsx) or CSV ---------- */
+function u8str(u8){return new TextDecoder('utf-8').decode(u8);}
+async function inflateRaw(u8){
+  var ds=new DecompressionStream('deflate-raw');
+  var stream=new Blob([u8]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+async function readZip(buf){
+  var v=new DataView(buf),u8=new Uint8Array(buf),i,end=-1;
+  for(i=buf.byteLength-22;i>=Math.max(0,buf.byteLength-65557);i--){if(v.getUint32(i,true)===0x06054b50){end=i;break;}}
+  if(end<0)throw new Error('zip');
+  var n=v.getUint16(end+10,true),off=v.getUint32(end+16,true),files={};
+  for(var k=0;k<n;k++){
+    if(v.getUint32(off,true)!==0x02014b50)throw new Error('zip');
+    var nl=v.getUint16(off+28,true),el=v.getUint16(off+30,true),cl=v.getUint16(off+32,true);
+    files[u8str(u8.subarray(off+46,off+46+nl))]={method:v.getUint16(off+10,true),csize:v.getUint32(off+20,true),lho:v.getUint32(off+42,true)};
+    off+=46+nl+el+cl;
+  }
+  return {files:files,read:async function(name){
+    var f=files[name];if(!f)return null;
+    var ln=v.getUint16(f.lho+26,true),le=v.getUint16(f.lho+28,true),start=f.lho+30+ln+le;
+    var raw=u8.subarray(start,start+f.csize);
+    if(f.method===0)return raw;
+    if(f.method===8)return inflateRaw(raw);
+    throw new Error('zip method');
+  }};
+}
+function parseXml(s){return new DOMParser().parseFromString(s,'application/xml');}
+function elsNS(node,name){return node.getElementsByTagNameNS('*',name);}
+function colIndex(ref){var m=/^([A-Z]+)/.exec(ref||'');if(!m)return 0;var n=0;for(var i=0;i<m[1].length;i++)n=n*26+(m[1].charCodeAt(i)-64);return n-1;}
+async function readXlsxRows(buf){
+  var z=await readZip(buf),shared=[],t,i,j;
+  t=await z.read('xl/sharedStrings.xml');
+  if(t){var sis=elsNS(parseXml(u8str(t)),'si');for(i=0;i<sis.length;i++){var ts=elsNS(sis[i],'t'),str='';for(j=0;j<ts.length;j++)str+=ts[j].textContent;shared.push(str);}}
+  var path=null,wb=await z.read('xl/workbook.xml'),rel=await z.read('xl/_rels/workbook.xml.rels');
+  if(wb&&rel){
+    var sh=elsNS(parseXml(u8str(wb)),'sheet')[0];
+    if(sh){
+      var rid=sh.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id')||sh.getAttribute('r:id');
+      var rl=elsNS(parseXml(u8str(rel)),'Relationship');
+      for(i=0;i<rl.length;i++){if(rl[i].getAttribute('Id')===rid){var tg=rl[i].getAttribute('Target');path=tg.charAt(0)==='/'?tg.slice(1):'xl/'+tg;}}
+    }
+  }
+  if(!path||!z.files[path])path=Object.keys(z.files).filter(function(n){return /^xl\/worksheets\/sheet\d+\.xml$/.test(n);}).sort()[0];
+  if(!path)throw new Error('sheet');
+  var cells=elsNS(parseXml(u8str(await z.read(path))),'c'),rows=[];
+  for(i=0;i<cells.length;i++){
+    var cell=cells[i],ref=cell.getAttribute('r')||'',ty=cell.getAttribute('t'),val=null,vs=elsNS(cell,'v')[0];
+    if(ty==='s'&&vs)val=shared[Number(vs.textContent)];
+    else if(ty==='inlineStr'){val='';var it=elsNS(cell,'t');for(j=0;j<it.length;j++)val+=it[j].textContent;}
+    else if(vs)val=vs.textContent;
+    var ri=parseInt(ref.replace(/[A-Z]+/,''),10)-1;
+    if(val==null||isNaN(ri))continue;
+    (rows[ri]=rows[ri]||[])[colIndex(ref)]=val;
+  }
+  return rows;
+}
+function parseCsv(text){
+  text=text.replace(/^﻿/,'');
+  var first=text.split(/\r?\n/)[0]||'';
+  var delim=[',',';','\t'].map(function(d){return [d,first.split(d).length];}).sort(function(a,b){return b[1]-a[1];})[0][0];
+  var rows=[],row=[],cur='',q=false,i,ch;
+  for(i=0;i<text.length;i++){
+    ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=ch;}
+    else if(ch==='"')q=true;
+    else if(ch===delim){row.push(cur);cur='';}
+    else if(ch==='\n'){row.push(cur);rows.push(row);row=[];cur='';}
+    else if(ch!=='\r')cur+=ch;
+  }
+  row.push(cur);rows.push(row);
+  return rows;
+}
+function namesFromRows(rows){
+  var hc=-1,hr=-1,i,j,out=[];
+  for(i=0;i<Math.min(rows.length,8)&&hc<0;i++){
+    var r=rows[i]||[];
+    for(j=0;j<r.length;j++){if(r[j]!=null&&/^\s*(nama|name)\b/i.test(String(r[j]))){hc=j;hr=i;break;}}
+  }
+  for(i=hr+1;i<rows.length;i++){
+    var row=rows[i]||[],v=null;
+    if(hc>=0)v=row[hc];
+    else for(j=0;j<row.length;j++){
+      var x=row[j];
+      if(x!=null&&String(x).trim()!==''&&!/^[\d\s.,]+$/.test(String(x))&&!/^\s*(no\.?|nomor|nis|nisn)\s*$/i.test(String(x))&&!/^\s*nama\b/i.test(String(x))){v=x;break;}
+    }
+    if(v==null)continue;
+    v=String(v).replace(/\s+/g,' ').trim();
+    if(v)out.push(v);
+  }
+  return out;
+}
+async function handleImportFile(file){
+  try{
+    var name=file.name.toLowerCase(),rows;
+    if(/\.xls$/.test(name)){toast('Old .xls files are not supported. Save as .xlsx or .csv first.');return;}
+    if(/\.(xlsx|xlsm)$/.test(name)){
+      if(typeof DecompressionStream==='undefined'){toast('This browser cannot read Excel files. Save the sheet as CSV, or paste the names instead.');return;}
+      rows=await readXlsxRows(await file.arrayBuffer());
+    }else rows=parseCsv(await file.text());
+    var all=namesFromRows(rows);
+    if(!all.length){toast('No names found. Put the names in the Nama column of the template.');return;}
+    var have={},fresh=[],skipped=0;
+    studs().forEach(function(s){have[s.name.toLowerCase()]=1;});
+    all.forEach(function(n){var k=n.toLowerCase();if(n.length>80)return;if(have[k]){skipped++;return;}have[k]=1;fresh.push(n);});
+    ui.importPrev={names:fresh,skipped:skipped,file:file.name,classId:cls().id};
+    render(true);
+  }catch(e){toast('Could not read that file. Use the template, or save it as CSV.');}
+}
+function buildTemplate(){
+  var rows=[[{v:'No',s:1},{v:'Nama',s:1}]],i;
+  for(i=1;i<=40;i++)rows.push([i,null]);
+  var help=[[{v:'Petunjuk',s:2}],
+    ['1. Ketik nama murid di kolom Nama pada sheet Daftar Siswa, satu murid per baris.'],
+    ['2. Jangan ubah tulisan Nama di baris pertama.'],
+    ['3. Simpan file. Di aplikasi, pilih kelas, buka tab Students, lalu Import from Excel.'],
+    ['4. Nama yang sudah ada di kelas tidak ditambahkan dua kali.']];
+  return buildXlsx([{name:'Daftar Siswa',rows:rows,freezeRows:1,minWidths:[6,38]},{name:'Petunjuk',rows:help,widthFrom:1}]);
+}
+
+/* ---------- quiz wheel ---------- */
+function rand01(){try{var a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296;}catch(e){return Math.random();}}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(rand01()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function excludedIds(){var q=ui.quiz;if(!q.noRepeat)return [];return q.result?q.history.slice(0,-1):q.history;}
+function quizPool(){
+  var q=ui.quiz,today=dayRec(todayStr()),ex=excludedIds();
+  var cand=studs().filter(function(s){return !q.presentOnly||today[s.id]==='H';});
+  return {cand:cand,pool:cand.filter(function(s){return ex.indexOf(s.id)<0;})};
+}
+function nameOf(id){var s=S.students.filter(function(x){return x.id===id;})[0];return s?s.name:null;}
+function resetQuiz(){var q=ui.quiz;q.token++;q.spinning=false;q.frozen=null;q.result=null;q.history=[];q.order=null;q.theta=0;q.sig='';}
+function viewQuiz(){
+  var q=ui.quiz;
+  if(!studs().length)return emptyState();
+  var P=quizPool(),res=q.result?nameOf(q.result):null,dis=q.spinning?' disabled':'',ex=excludedIds().length;
+  var h='<section class="card pad"><h2>Quiz wheel</h2>'+
+    '<label class="check"><input type="checkbox" id="qPresent"'+(q.presentOnly?' checked':'')+dis+'><span>Only students marked present today</span></label>'+
+    '<label class="check"><input type="checkbox" id="qNoRepeat"'+(q.noRepeat?' checked':'')+dis+'><span>Do not call the same student twice</span></label>'+
+    '<p class="hint">'+P.pool.length+' name'+(P.pool.length===1?'':'s')+' on the wheel'+(ex?' · '+ex+' already called':'')+'</p></section>';
+  if(!P.pool.length){
+    h+='<div class="card empty"><p>'+(!P.cand.length?(q.presentOnly?'Nobody is marked present today. Mark attendance first, or turn off the first option above.':'No students in this class.'):'Everyone has been called.')+'</p>'+(q.history.length?'<button class="btn primary" data-act="qreset">Start over</button>':'')+'</div>';
+  }else{
+    h+='<section class="card wheelcard"><canvas id="wheel" role="img" aria-label="Wheel with '+P.pool.length+' names"></canvas></section>'+
+      '<button class="btn primary big" id="spinBtn" data-act="qspin"'+dis+'>'+(q.spinning?'Spinning…':'Spin')+'</button>';
+  }
+  h+='<section class="card pad resultcard" id="qResult" aria-live="polite">'+(res?'<span class="lab">Called</span><div class="bigname">'+esc(res)+'</div>':'<p class="hint">'+(q.spinning?'…':'Tap Spin to pick a student.')+'</p>')+'</section>';
+  if(q.history.length){
+    h+='<section class="card pad"><div class="gtop"><h2>Called so far<span class="count">'+q.history.length+'</span></h2><button class="btn ghost small" data-act="qreset"'+dis+'>Reset</button></div><div class="chiplist">'+
+      q.history.map(function(id,i){return '<span>'+(i+1)+'. '+esc(nameOf(id)||'?')+'</span>';}).join('')+'</div></section>';
+  }
+  h+='<section class="card pad"><h2>Random order</h2><p class="hint">Shuffle the whole list to call students one by one without the wheel.</p><div class="actions"><button class="btn" data-act="qorder">Shuffle order</button>'+(q.order?'<button class="btn ghost" data-act="qorder-clear">Clear</button>':'')+'</div>';
+  if(q.order)h+='<ol class="ol">'+q.order.map(function(id){return '<li>'+esc(nameOf(id)||'?')+'</li>';}).join('')+'</ol>';
+  return h+'</section>';
+}
+function fitText(ctx,s,maxW){
+  if(ctx.measureText(s).width<=maxW)return s;
+  var t=s;while(t.length>1&&ctx.measureText(t+'…').width>maxW)t=t.slice(0,-1);
+  return t+'…';
+}
+function drawWheel(){
+  var cv=$('#wheel');if(!cv)return;
+  var pool=ui.quiz.frozen||quizPool().pool,n=pool.length;if(!n)return;
+  var css=getComputedStyle(document.documentElement);
+  function tok(x){return css.getPropertyValue(x).trim();}
+  var W=cv.clientWidth||300,dpr=window.devicePixelRatio||1;
+  if(cv.width!==Math.round(W*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(W*dpr);}
+  var ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,W);
+  var cx=W/2,cy=W/2,R=W/2-14,seg=2*Math.PI/n,theta=ui.quiz.theta;
+  var cols=[tok('--accent'),tok('--h'),tok('--s'),tok('--i'),tok('--a')],i;
+  for(i=0;i<n;i++){
+    var a0=theta+i*seg-Math.PI/2,ci=i%5;
+    if(i===n-1&&n>1&&ci===0)ci=2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,a0,a0+seg);ctx.closePath();
+    ctx.fillStyle=cols[ci];ctx.fill();
+    if(n>1){ctx.strokeStyle=tok('--surface');ctx.lineWidth=1.5;ctx.stroke();}
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(a0+seg/2);
+    ctx.fillStyle=tok('--on');ctx.textAlign='right';ctx.textBaseline='middle';
+    var fs=Math.max(8,Math.min(17,R*0.72*seg*0.62)),fam=tok('--font-body'),mw=R-40;
+    ctx.font='600 '+fs+'px '+fam;
+    while(fs>10&&ctx.measureText(pool[i].name).width>mw){fs-=1;ctx.font='600 '+fs+'px '+fam;}
+    ctx.fillText(fitText(ctx,pool[i].name,mw),R-12,0);
+    ctx.restore();
+  }
+  ctx.beginPath();ctx.arc(cx,cy,18,0,2*Math.PI);ctx.fillStyle=tok('--surface');ctx.fill();ctx.strokeStyle=tok('--line');ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-11,cy-R-8);ctx.lineTo(cx+11,cy-R-8);ctx.lineTo(cx,cy-R+14);ctx.closePath();
+  ctx.fillStyle=tok('--ink');ctx.fill();ctx.strokeStyle=tok('--surface');ctx.lineWidth=2;ctx.stroke();
+}
+function startSpin(){
+  var q=ui.quiz;if(q.spinning)return;
+  q.result=null;
+  var P=quizPool();
+  if(!P.pool.length){render(true);return;}
+  var sig=P.pool.map(function(s){return s.id;}).join(',');
+  if(sig!==q.sig){q.theta=0;q.sig=sig;}
+  q.spinning=true;q.frozen=P.pool;
+  var token=++q.token,n=P.pool.length,seg=2*Math.PI/n,TAU=2*Math.PI;
+  var idx=Math.floor(rand01()*n),f=0.15+rand01()*0.7;
+  var theta0=q.theta,delta=((-(idx+f)*seg-theta0)%TAU+TAU)%TAU;
+  var total=TAU*(5+Math.floor(rand01()*3))+delta;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var dur=reduce?0:4200,t0=performance.now();
+  render(true);
+  function finish(){
+    q.theta=theta0+total;q.spinning=false;q.frozen=null;
+    q.history.push(P.pool[idx].id);q.result=P.pool[idx].id;
+    if(ui.tab==='quiz'&&!ui.detail)render(true);
+  }
+  function frame(now){
+    if(token!==q.token)return;
+    var t=dur?Math.min(1,(now-t0)/dur):1;
+    q.theta=theta0+total*(1-Math.pow(1-t,3));
+    drawWheel();
+    if(t<1)requestAnimationFrame(frame);else finish();
+  }
+  requestAnimationFrame(frame);
 }
 
 /* ---------- actions ---------- */
@@ -788,9 +1103,9 @@ function removeStudents(ids){
   }
 }
 function updateDerived(sid){
-  var el=$('#av-'+sid);if(el)el.textContent=fmt(studentAvg(sid));
-  var avg=classAvgs(studs());
-  SCORES.forEach(function(s){var e=$('#ca-'+s.k);if(e)e.textContent=fmt(avg[s.k]);});
+  var r=aRange(),el=$('#av-'+sid);if(el)el.textContent=fmt(studentAvg(sid,r));
+  var avg=classAvgs(studs(),r);
+  ['k','p'].forEach(function(k){var e=$('#ca-'+k);if(e)e.textContent=fmt(avg[k]);});
 }
 function onAspect(el){
   var sid=el.dataset.sid,k=el.dataset.k,v=el.value.trim().replace(',','.'),g=S.grades[sid]||{};
@@ -847,6 +1162,28 @@ $('#view').addEventListener('click',function(e){
   if(act==='open-student'){ui.detail=sid;ui.confirm=null;return render(false);}
   if(act==='back'){ui.detail=null;return render(false);}
   if(act==='cancel'){ui.confirm=null;return render(true);}
+  if(act==='aprev'||act==='anext'){var ad=parseDate(ui.adate);ui.adate=iso(new Date(ad.getFullYear(),ad.getMonth()+(act==='anext'?6:-6),1));return render(true);}
+  if(act==='athis'){ui.adate=todayStr();return render(true);}
+  if(act==='template'){
+    try{saveFile('Template daftar siswa.xlsx',buildTemplate());toast('Template saved. Look in your Downloads folder.');}
+    catch(x){toast('Could not create the template.');}
+    return;
+  }
+  if(act==='import-cancel'){ui.importPrev=null;return render(true);}
+  if(act==='import-yes'){
+    var ip=ui.importPrev;
+    if(!ip||ip.classId!==cls().id){ui.importPrev=null;return render(true);}
+    var ir=addNames(ip.names);ui.importPrev=null;
+    toast(ir.added+' student'+(ir.added===1?'':'s')+' added to '+cls().name+'.');return render(true);
+  }
+  if(act==='qspin')return startSpin();
+  if(act==='qreset'){resetQuiz();return render(true);}
+  if(act==='qorder'){
+    var qc=quizPool().cand;
+    if(!qc.length){toast('No students to shuffle.');return;}
+    ui.quiz.order=shuffle(qc.map(function(s){return s.id;}));return render(true);
+  }
+  if(act==='qorder-clear'){ui.quiz.order=null;return render(true);}
   if(act==='goto-students'){ui.tab='students';return render(false);}
   if(act==='allpresent'){
     var cid=cls().id,a=S.attendance[cid]||(S.attendance[cid]={}),r=a[ui.date]||(a[ui.date]={});
@@ -887,13 +1224,14 @@ $('#view').addEventListener('click',function(e){
   }
   if(act==='del-ask'){ui.confirm={type:'student',id:sid};return render(true);}
   if(act==='del-yes'){removeStudents([sid]);ui.confirm=null;save();toast('Student deleted.');return render(true);}
-  if(act==='matdel'){ui.confirm={type:'material'};ui.matOpen=true;return render(true);}
-  if(act==='matdel-yes'){
-    var mid=ui.topic.material,cid3=cls().id;
-    S.materials=S.materials.filter(function(m){return m.id!==mid;});
+  if(act==='topicdel'){ui.confirm={type:'topic'};ui.topicOpen=true;return render(true);}
+  if(act==='topicdel-yes'){
+    var kd=ui.gsub,mid=ui.topic[kd],cid3=cls().id;
+    if(kd==='basic')S.basicTypes=S.basicTypes.filter(function(m){return m.id!==mid;});
+    else S.materials=S.materials.filter(function(m){return m.id!==mid;});
     var tk=S.tests[cid3];
-    if(tk&&tk.material){delete tk.material[mid];if(!Object.keys(tk.material).length)delete tk.material;if(!Object.keys(tk).length)delete S.tests[cid3];}
-    ui.topic.material=null;ui.confirm=null;save();toast('Material deleted.');return render(true);
+    if(tk&&tk[kd]){delete tk[kd][mid];if(!Object.keys(tk[kd]).length)delete tk[kd];if(!Object.keys(tk).length)delete S.tests[cid3];}
+    ui.topic[kd]=null;ui.confirm=null;save();toast('Deleted.');return render(true);
   }
   if(act==='delclass'){ui.confirm={type:'class'};return render(true);}
   if(act==='delclass-yes'){
@@ -901,8 +1239,9 @@ $('#view').addEventListener('click',function(e){
     removeStudents(S.students.filter(function(s){return s.classId===id;}).map(function(s){return s.id;}));
     delete S.attendance[id];delete S.tests[id];
     S.materials=S.materials.filter(function(m){return m.classId!==id;});
+    S.basicTypes=S.basicTypes.filter(function(m){return m.classId!==id;});
     S.classes=S.classes.filter(function(c){return c.id!==id;});
-    S.currentClass=S.classes[0].id;ui.confirm=null;ui.topic.material=null;save();toast('Class deleted.');return render(false);
+    S.currentClass=S.classes[0].id;ui.confirm=null;ui.topic.material=null;ui.topic.basic=null;ui.importPrev=null;resetQuiz();save();toast('Class deleted.');return render(false);
   }
   if(act==='copy'){
     return clipboardCopy(JSON.stringify(S),'Backup copied. Paste it into Notes or send it to yourself.',function(txt){ui.backupText=txt;render(true);var ta=$('#backupText');if(ta){ta.focus();ta.select();}});
@@ -915,7 +1254,7 @@ $('#view').addEventListener('click',function(e){
   if(act==='restore-yes'){
     var o=parseBackup(ui.restoreDraft);if(!o)return;
     S=normalize(o);
-    ui.confirm=null;ui.restoreDraft='';ui.backupText='';ui.topic.material=null;save();toast('Backup restored.');return render(false);
+    ui.confirm=null;ui.restoreDraft='';ui.backupText='';ui.topic.material=null;ui.topic.basic=null;ui.importPrev=null;resetQuiz();save();toast('Backup restored.');return render(false);
   }
 });
 $('#view').addEventListener('input',function(e){
@@ -934,6 +1273,17 @@ $('#view').addEventListener('change',function(e){
   var t=e.target;
   if(t.id==='dateInput'){if(t.value)setDate(t.value);return;}
   if(t.id==='gDateInput'){if(t.value)setGDate(t.value);return;}
+  if(t.id==='importFile'){var f0=t.files&&t.files[0];if(f0)handleImportFile(f0);return;}
+  if(t.id==='qPresent'){ui.quiz.presentOnly=t.checked;ui.quiz.sig='';return render(true);}
+  if(t.id==='qNoRepeat'){ui.quiz.noRepeat=t.checked;ui.quiz.sig='';return render(true);}
+  if(t.id==='setK'||t.id==='setP'){S.settings[t.id==='setK'?'k':'p']=t.value;ui.setOpen=true;save();return render(true);}
+  if(t.id==='setMeet'||t.id==='setMin'||t.id==='setA'||t.id==='setB'){
+    var sv=Number(String(t.value).replace(',','.')),ns=Object.assign({},S.settings);
+    if(t.id==='setMeet')ns.meetings=Math.round(sv);else if(t.id==='setMin')ns.minPct=sv;else if(t.id==='setA')ns.aPct=sv;else ns.bPct=sv;
+    if(isFinite(sv)&&ns.meetings>=1&&ns.meetings<=60&&ns.minPct>0&&ns.minPct<=ns.bPct&&ns.bPct<=ns.aPct&&ns.aPct<=100){S.settings=ns;save();}
+    else toast('Check the numbers: minimum is not above B, B is not above A, and A is at most 100.');
+    ui.setOpen=true;return render(true);
+  }
   if(t.id==='restoreFile'){
     var f=t.files&&t.files[0];if(!f)return;
     var rd=new FileReader();
@@ -946,9 +1296,9 @@ $('#view').addEventListener('change',function(e){
     rd.readAsText(f);return;
   }
   if(t.id==='clsName'){var v=t.value.replace(/\s+/g,' ').trim();if(v){cls().name=v;save();renderClassSel();}else{t.value=cls().name;}return;}
-  if(t.id==='matName'){
-    var nv=t.value.replace(/\s+/g,' ').trim(),m=S.materials.filter(function(x){return x.id===ui.topic.material;})[0];
-    if(m&&nv){m.name=nv;save();}
+  if(t.id==='topicName'){
+    var nv=t.value.replace(/\s+/g,' ').trim(),tm=typeList(ui.gsub).filter(function(x){return x.id===ui.topic[ui.gsub];})[0];
+    if(tm&&nv){tm.name=nv;save();}
     render(true);return;
   }
   if(t.classList&&t.classList.contains('nameedit')){
@@ -956,7 +1306,7 @@ $('#view').addEventListener('change',function(e){
     if(s&&nn){s.name=nn;save();}else{render(true);}
   }
 });
-$('#view').addEventListener('toggle',function(e){if(e.target.id==='matDetails')ui.matOpen=e.target.open;},true);
+$('#view').addEventListener('toggle',function(e){if(e.target.id==='topicDetails')ui.topicOpen=e.target.open;else if(e.target.id==='setDetails')ui.setOpen=e.target.open;},true);
 $('#view').addEventListener('submit',function(e){
   e.preventDefault();
   if(e.target.id==='addForm'){
@@ -966,22 +1316,23 @@ $('#view').addEventListener('submit',function(e){
   }else if(e.target.id==='addClass'){
     var name=$('#newClass').value.replace(/\s+/g,' ').trim();
     if(!name)return;
-    var c={id:uid(),name:name};S.classes.push(c);S.currentClass=c.id;ui.topic.material=null;save();toast('Class added.');render(false);
-  }else if(e.target.id==='addMaterial'){
-    var mn=$('#newMaterial').value.replace(/\s+/g,' ').trim();
+    var c={id:uid(),name:name};S.classes.push(c);S.basicTypes=S.basicTypes.concat(defaultBasic(c.id));S.currentClass=c.id;ui.topic.material=null;ui.topic.basic=null;ui.importPrev=null;resetQuiz();save();toast('Class added.');render(false);
+  }else if(e.target.id==='addTopic'){
+    var kd2=ui.gsub,mn=$('#newTopic').value.replace(/\s+/g,' ').trim();
     if(!mn)return;
-    var dup=topicsFor('material').some(function(x){return x.name.toLowerCase()===mn.toLowerCase();});
-    if(dup){toast('That material is already in this class.');return;}
-    var mat={id:uid(),classId:cls().id,name:mn};S.materials.push(mat);ui.topic.material=mat.id;ui.matOpen=true;save();
-    render(true);var nm=$('#newMaterial');if(nm)nm.focus();
+    var dup=topicsFor(kd2).some(function(x){return x.name.toLowerCase()===mn.toLowerCase();});
+    if(dup){toast('That name is already used in this class.');return;}
+    var mat={id:uid(),classId:cls().id,name:mn};typeList(kd2).push(mat);ui.topic[kd2]=mat.id;ui.topicOpen=true;save();
+    render(true);var nm=$('#newTopic');if(nm)nm.focus();
   }
 });
-$('#classSel').addEventListener('change',function(e){S.currentClass=e.target.value;ui.confirm=null;ui.detail=null;ui.topic.material=null;save();render(false);});
+$('#classSel').addEventListener('change',function(e){S.currentClass=e.target.value;ui.confirm=null;ui.detail=null;ui.topic.material=null;ui.topic.basic=null;ui.importPrev=null;resetQuiz();save();render(false);});
 document.querySelector('.tabbar').addEventListener('click',function(e){
   var b=e.target.closest('button[data-tab]');if(!b)return;
   ui.tab=b.dataset.tab;ui.confirm=null;ui.detail=null;render(false);
 });
 
+window.addEventListener('resize',function(){drawWheel();});
 render(false);
 })();
 </script>
