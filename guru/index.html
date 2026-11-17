@@ -97,6 +97,11 @@ canvas#wheel{max-width:100%;touch-action:manipulation}
 .legendc i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:4px}
 svg.chart text{fill:var(--mute);font-size:10px}
 svg.chart .grid{stroke:var(--line);stroke-width:1}
+.swgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 6px;margin-top:6px}
+.swb{border:0;background:none;color:var(--ink);font:inherit;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:2px}
+.swb i{width:44px;height:44px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 2px var(--line);display:block}
+.swb.on i{box-shadow:0 0 0 3px var(--ink)}
+.swb.on{font-weight:700}
 /* modal & toast */
 #modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:none;align-items:flex-end;justify-content:center}
 #modal.on{display:flex}
@@ -116,6 +121,7 @@ svg.chart .grid{stroke:var(--line);stroke-width:1}
 <body>
 <header class="top">
   <div class="t"><b id="hTitle">Asisten Guru</b><small id="hSub"></small></div>
+  <button id="btnTheme" data-act="themeToggle" aria-label="Ganti terang/gelap">🌙</button>
   <button data-act="nav" data-v="set" aria-label="Pengaturan dan cadangan">⚙️</button>
 </header>
 <main id="app"></main>
@@ -230,7 +236,7 @@ function init(){
     events:EV0.map(x=>({id:uid(),s:x[0],e:x[1],t:x[2],c:x[3]})),
     classes:names.map(n=>({id:slug(n),name:n,students:[]})),
     sheets:[],agenda:{},absen:{},
-    settings:{alarm:true,lead:5,lastBackup:0,kkm:75,guru:'Muhammad Valdi Saleh, S.Pd',sekolah:'SMK Negeri 2 Cilaku',mapel:'Matematika'}};
+    settings:{theme:'auto',accent:'toska',alarm:true,lead:5,lastBackup:0,kkm:75,guru:'Muhammad Valdi Saleh, S.Pd',sekolah:'SMK Negeri 2 Cilaku',mapel:'Matematika'}};
 }
 const KEY='asistenguru.v1';
 function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);return fix(o)}}catch(e){}return null}
@@ -241,6 +247,35 @@ function flush(){clearTimeout(saveT);try{localStorage.setItem(KEY,JSON.stringify
 addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.hidden)flush()});
 if(!localStorage.getItem(KEY))flush();
 
+
+/* ===================== Tema ===================== */
+// [nama, terang: pri, pri2, bg, garis | gelap: pri, pri2, bg, kartu, garis]
+const ACC={
+ toska:['Toska','#0f766e','#d5f5ef','#f4f7f6','#dbe5e1','#2dd4bf','#0f3b37','#0d1513','#16211e','#2a3a36'],
+ biru:['Biru','#1d4ed8','#dbe7ff','#f3f6fc','#d9e2f2','#60a5fa','#1b2f57','#0c1220','#151d30','#27344f'],
+ indigo:['Indigo','#4338ca','#e3e2fb','#f5f5fc','#dedcf2','#818cf8','#2a2860','#0e0d1f','#181730','#2f2e55'],
+ ungu:['Ungu','#7e22ce','#eddcfb','#f8f4fc','#e6dcf2','#c084fc','#3a1d58','#140d1c','#1e1529','#3a2a52'],
+ pink:['Merah muda','#be185d','#fbdcea','#fcf4f7','#f2dce6','#f472b6','#561d38','#190d13','#26151d','#4a2837'],
+ oranye:['Oranye','#c2410c','#ffe4d0','#fcf6f1','#f0e0d3','#fb923c','#4d2a12','#17100b','#231810','#46301f'],
+ hijau:['Hijau','#15803d','#d9f5e1','#f3f8f4','#dae8dd','#4ade80','#14401f','#0c1510','#15231a','#27402e'],
+ slate:['Abu-abu','#334155','#e2e8f0','#f4f6f8','#dde2e8','#94a3b8','#28323f','#0e1217','#171d25','#2b3541']
+};
+const BASE={
+ light:{card:'#ffffff',ink:'#14231f',mute:'#5d716b',red:'#dc2626',redbg:'#fee2e2',amber:'#b45309',amberbg:'#fef3c7',blue:'#1d4ed8',bluebg:'#dbeafe',green:'#15803d',greenbg:'#dcfce7',onpri:'#ffffff'},
+ dark:{ink:'#e8eef0',mute:'#9fb0b6',red:'#f87171',redbg:'#4a1d1d',amber:'#fbbf24',amberbg:'#40300f',blue:'#93c5fd',bluebg:'#1e3a5f',green:'#86efac',greenbg:'#143a22',onpri:'#06130f'}
+};
+const darkMQ=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
+function isDark(){const t=DB.settings.theme;return t==='dark'||(t!=='light'&&!!darkMQ&&darkMQ.matches)}
+function applyTheme(){
+  const a=ACC[DB.settings.accent]||ACC.toska,d=isDark(),r=document.documentElement.style;
+  const v=Object.assign({},BASE[d?'dark':'light'],d?{pri:a[5],pri2:a[6],bg:a[7],card:a[8],line:a[9]}:{pri:a[1],pri2:a[2],bg:a[3],line:a[4]});
+  for(const k in v)r.setProperty('--'+k,v[k]);
+  r.colorScheme=d?'dark':'light';
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=v.pri;
+  const b=document.getElementById('btnTheme');if(b){b.textContent=d?'☀️':'🌙';b.setAttribute('aria-label',d?'Ganti ke tema terang':'Ganti ke tema gelap')}
+}
+if(darkMQ&&darkMQ.addEventListener)darkMQ.addEventListener('change',()=>{if(DB.settings.theme==='auto'){applyTheme();if(typeof view!=='undefined'&&view==='tools'&&tl==='spin')render()}});
+applyTheme();
 
 /* ===================== Helper data ===================== */
 const cls=id=>DB.classes.find(c=>c.id===id);
@@ -622,7 +657,12 @@ function backupBanner(){
 function vSet(){
   const last=DB.settings.lastBackup?new Date(DB.settings.lastBackup).toLocaleString('id-ID'):'belum pernah';
   const S=DB.settings;
-  return`<div class="card"><b>💾 Cadangan data</b><p class="small mute" style="margin:4px 0 10px">Terakhir dicadangkan: ${last}. Data tersimpan di peramban HP ini. Jika data situs dihapus atau ganti HP, pulihkan dari file cadangan.</p>
+  return`<div class="card"><b>🎨 Tampilan</b>
+   <div class="seg" style="margin:10px 0 4px"><button class="${S.theme==='auto'?'on':''}" data-act="setMode" data-v="auto">Otomatis</button><button class="${S.theme==='light'?'on':''}" data-act="setMode" data-v="light">☀️ Terang</button><button class="${S.theme==='dark'?'on':''}" data-act="setMode" data-v="dark">🌙 Gelap</button></div>
+   <p class="small mute" style="margin:0 0 6px">Otomatis mengikuti pengaturan HP. Tombol ☀️/🌙 di pojok atas untuk berganti cepat.</p>
+   <div class="small mute">Warna aksen</div>
+   <div class="swgrid">${Object.entries(ACC).map(([id,a])=>`<button class="swb ${S.accent===id?'on':''}" data-act="setAccent" data-v="${id}"><i style="background:${isDark()?a[5]:a[1]}"></i>${a[0]}</button>`).join('')}</div></div>
+  <div class="card"><b>💾 Cadangan data</b><p class="small mute" style="margin:4px 0 10px">Terakhir dicadangkan: ${last}. Data tersimpan di peramban HP ini. Jika data situs dihapus atau ganti HP, pulihkan dari file cadangan.</p>
    <div class="row"><button class="btn grow" data-act="backup">Unduh cadangan</button><button class="btn sec grow" data-act="share">Bagikan</button></div>
    <button class="btn line block" style="margin-top:8px" data-act="restore">Pulihkan dari file cadangan</button></div>
   <div class="card"><b>📤 Ekspor ke Excel</b><div class="row" style="margin-top:8px"><button class="btn sec grow" data-act="exportAll">Semua nilai & kehadiran</button><button class="btn sec grow" data-act="exportAgenda">Agenda harian</button></div></div>
@@ -758,11 +798,15 @@ const A={
  // tools
  tlTab(t){tl=t.dataset.v;render()},
  spSpin(){spin()},spReset(){sp.used=[];sp.hist=[];sp.winner=null;render()},
+ // tema
+ setMode(t){DB.settings.theme=t.dataset.v;save();applyTheme();render()},
+ setAccent(t){DB.settings.accent=t.dataset.v;save();applyTheme();render()},
+ themeToggle(){DB.settings.theme=isDark()?'light':'dark';save();applyTheme();if(view==='set'||(view==='tools'&&tl==='spin'))render()},
  // cadangan
  backup(){dl(backupBlob(),bname());DB.settings.lastBackup=Date.now();save();toast('Cadangan diunduh. Simpan file ini di tempat aman (mis. Google Drive / WhatsApp ke diri sendiri).',5000);if(view==='set'||view==='jadwal')render()},
  async share(){const f=new File([backupBlob()],bname(),{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'Cadangan Asisten Guru'});DB.settings.lastBackup=Date.now();save();render()}catch(e){}}else toast('Berbagi file tidak didukung di peramban ini; gunakan Unduh cadangan.',4000)},
  restore(){$('#fileRestore').click()},
- resetAll(){if(!confirm('Yakin hapus SEMUA data? Pastikan sudah punya file cadangan.'))return;if(!confirm('Konfirmasi terakhir: semua data siswa, nilai, agenda, dan absensi akan dihapus.'))return;DB=init();flush();nl={cid:null,tab:'daftar',sh:null};render();toast('Data dikembalikan ke awal')},
+ resetAll(){if(!confirm('Yakin hapus SEMUA data? Pastikan sudah punya file cadangan.'))return;if(!confirm('Konfirmasi terakhir: semua data siswa, nilai, agenda, dan absensi akan dihapus.'))return;DB=init();applyTheme();flush();nl={cid:null,tab:'daftar',sh:null};render();toast('Data dikembalikan ke awal')},
  async install(){if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;render()}
 };
 document.addEventListener('click',e=>{
@@ -773,7 +817,7 @@ $('#fileRestore').addEventListener('change',async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
   try{const o=JSON.parse(await f.text());const d=o.data||o;if(!Array.isArray(d.classes)||!Array.isArray(d.schedule))throw 0;
     if(!confirm('Pulihkan data dari "'+f.name+'"? Data saat ini akan diganti.'))return;
-    DB=fix(d);mergeSplit();flush();nl={cid:null,tab:'daftar',sh:null};sp={cid:null,used:[],remove:true,rot:0,spinning:false,winner:null,hist:[]};render();toast('Data berhasil dipulihkan')}
+    DB=fix(d);applyTheme();mergeSplit();flush();nl={cid:null,tab:'daftar',sh:null};sp={cid:null,used:[],remove:true,rot:0,spinning:false,winner:null,hist:[]};render();toast('Data berhasil dipulihkan')}
   catch(err){toast('File cadangan tidak valid',3500)}
 });
 
