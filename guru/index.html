@@ -241,6 +241,7 @@ function flush(){clearTimeout(saveT);try{localStorage.setItem(KEY,JSON.stringify
 addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.hidden)flush()});
 if(!localStorage.getItem(KEY))flush();
 
+
 /* ===================== Helper data ===================== */
 const cls=id=>DB.classes.find(c=>c.id===id);
 const clsName=id=>cls(id)?.name||id;
@@ -285,7 +286,7 @@ function vJadwal(){
   const nextId=t.find(s=>toMin(s.start)>nm)?.id;
   const sess=(s,isT)=>{const a=toMin(s.start),b=toMin(s.end);const st=isT?(nm>=b?'done':nm>=a?'live':''):'';
     const badge=isT?(st==='live'?'<span class="chip green">Berlangsung</span>':s.id===nextId?'<span class="chip">Berikutnya</span>':''):'';
-    return`<div class="sess ${st}" data-act="schedEdit" data-id="${s.id}"><div class="tm">${s.start}<small>${s.end}</small></div><div class="sb"><b>${esc(s.kelas)}</b><span>${DB.settings.mapel} · ${b-a} menit</span></div>${badge}</div>`};
+    return`<div class="sess ${st}" data-act="schedEdit" data-id="${s.id}"><div class="tm">${s.start}<small>${s.end}</small></div><div class="sb"><b>${esc(s.kelas)}</b><span>${DB.settings.mapel} · ${b-a} menit${(()=>{const n=DB.schedule.filter(x=>x.day===s.day&&x.kelas.trim().toLowerCase()===s.kelas.trim().toLowerCase()).length;return n>1?' · bagian dari 1 pertemuan':''})()}</span></div>${badge}</div>`};
   let h=backupBanner();
   h+=`<div class="card"><div class="row sp"><b>Hari ini</b><span class="mute small">${fdateL(ds(now))}</span></div>`;
   const ev=evOn(ds(now)).filter(e=>e.c==='libur');
@@ -382,11 +383,37 @@ function evForm(e){return`<h3>${e.id?'Ubah':'Tambah'} kegiatan</h3>
  <div class="row" style="margin-top:14px"><button class="btn grow" data-act="evSave" data-id="${e.id||''}">Simpan</button>${e.id?`<button class="btn danger" data-act="evDel" data-id="${e.id}">Hapus</button>`:''}<button class="btn line" data-act="closeModal">Batal</button></div>`}
 
 /* ---------- Agenda ---------- */
+// sesi tambahan berawalan 'x' dan bukan id jadwal (id jadwal acak bisa saja berawalan 'x')
+const isX=sid=>sid[0]==='x'&&!DB.schedule.some(s=>s.id===sid);
 function getSessions(d){
-  const wd=parse(d).getDay(),out=[];
-  DB.schedule.filter(s=>s.day===wd).forEach(s=>out.push({key:d+'|'+s.id,sid:s.id,cid:clsByName(s.kelas)?.id||slug(s.kelas),kelas:s.kelas,st:s.start,jam:s.start+'–'+s.end,x:false}));
-  Object.values(DB.agenda).filter(r=>r.d===d&&r.sid[0]==='x').forEach(r=>out.push({key:d+'|'+r.sid,sid:r.sid,cid:r.cid,kelas:clsName(r.cid),st:r.st,jam:r.jam,x:true}));
+  // Jadwal terpotong (hari & kelas sama, mis. 10.20–11.40 lalu 12.20–13.00) dihitung 1 pertemuan.
+  const wd=parse(d).getDay(),out=[],g={};
+  DB.schedule.filter(s=>s.day===wd).sort(byStart).forEach(s=>{
+    const cid=clsByName(s.kelas)?.id||slug(s.kelas),part=s.start+'–'+s.end;
+    if(g[cid]){g[cid].parts.push(part)}
+    else{g[cid]={key:d+'|'+s.id,sid:s.id,cid,kelas:s.kelas,st:s.start,parts:[part],x:false};out.push(g[cid])}
+  });
+  out.forEach(o=>{o.jam=o.parts.join(' & ')});
+  Object.values(DB.agenda).filter(r=>r.d===d&&isX(r.sid)).forEach(r=>out.push({key:d+'|'+r.sid,sid:r.sid,cid:r.cid,kelas:clsName(r.cid),st:r.st,jam:r.jam,x:true}));
   return out.sort((a,b)=>a.st.localeCompare(b.st));
+}
+// Rapikan data lama: agenda/absensi yang tersimpan per-potongan dipindah ke pertemuan gabungan.
+function mergeSplit(){
+  const sched=Object.fromEntries(DB.schedule.map(x=>[x.id,x])),firstOf={};
+  const first=sc=>{const k=sc.day+'|'+sc.kelas.trim().toLowerCase();if(!(k in firstOf))firstOf[k]=DB.schedule.filter(x=>x.day===sc.day&&x.kelas.trim().toLowerCase()===sc.kelas.trim().toLowerCase()).sort(byStart)[0];return firstOf[k]};
+  let changed=false;
+  for(const key of Object.keys(DB.agenda)){const r=DB.agenda[key];if(!r||isX(r.sid))continue;const sc=sched[r.sid];if(!sc)continue;const f=first(sc);if(!f||f.id===r.sid)continue;
+    const tk=r.d+'|'+f.id,t=DB.agenda[tk];
+    if(!t)DB.agenda[tk]={...r,sid:f.id};
+    else{const j=(a,b)=>!a?b:(!b||a===b)?a:a+' / '+b;t.materi=j(t.materi,r.materi);t.catatan=j(t.catatan,r.catatan)}
+    delete DB.agenda[key];changed=true}
+  for(const key of Object.keys(DB.absen)){const[d,sid]=key.split('|');if(isX(sid))continue;const sc=sched[sid];if(!sc)continue;const f=first(sc);if(!f||f.id===sid)continue;
+    const tk=d+'|'+f.id,a=DB.absen[key],t=DB.absen[tk];
+    if(!t)DB.absen[tk]=a;else for(const [k,v] of Object.entries(a.m))if(!t.m[k])t.m[k]=v;
+    delete DB.absen[key];changed=true}
+  const cache={};
+  for(const r of Object.values(DB.agenda)){if(isX(r.sid))continue;const ss=cache[r.d]||(cache[r.d]=getSessions(r.d));const m=ss.find(x=>x.sid===r.sid);if(m&&(r.jam!==m.jam||r.st!==m.st)){r.jam=m.jam;r.st=m.st;changed=true}}
+  if(changed)save();
 }
 function absSummary(key){const a=DB.absen[key];if(!a)return'Belum diabsen';const c={H:0,S:0,I:0,A:0};Object.values(a.m).forEach(v=>c[v]++);return`H ${c.H} · S ${c.S} · I ${c.I} · A ${c.A}`}
 function vAgenda(){
@@ -677,8 +704,8 @@ const A={
  schedSave(t){const day=+$('#sfDay').value,st=$('#sfStart').value,en=$('#sfEnd').value,k=$('#sfKelas').value.trim();
   if(!st||!en||!k)return toast('Lengkapi jam dan kelas');if(toMin(en)<=toMin(st))return toast('Jam selesai harus setelah jam mulai');
   const c=ensureClass(k);const id=t.dataset.id;if(id){Object.assign(DB.schedule.find(x=>x.id===id),{day,start:st,end:en,kelas:c.name})}else DB.schedule.push({id:uid(),day,start:st,end:en,kelas:c.name});
-  save();closeModal();render()},
- schedDel(t){if(!confirm('Hapus jadwal ini?'))return;DB.schedule=DB.schedule.filter(x=>x.id!==t.dataset.id);save();closeModal();render()},
+  mergeSplit();save();closeModal();render()},
+ schedDel(t){if(!confirm('Hapus jadwal ini?'))return;DB.schedule=DB.schedule.filter(x=>x.id!==t.dataset.id);mergeSplit();save();closeModal();render()},
  async notifPerm(){if(!('Notification'in window))return toast('Peramban ini tidak mendukung notifikasi');const r=await Notification.requestPermission();toast(r==='granted'?'Notifikasi diizinkan':'Notifikasi tidak diizinkan');render()},
  notifTest(){notify('Tes pengingat','Jika Anda mendengar bunyi dan melihat pesan ini, pengingat berfungsi.','test')},
  icsExport(){exportIcs()},
@@ -746,7 +773,7 @@ $('#fileRestore').addEventListener('change',async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
   try{const o=JSON.parse(await f.text());const d=o.data||o;if(!Array.isArray(d.classes)||!Array.isArray(d.schedule))throw 0;
     if(!confirm('Pulihkan data dari "'+f.name+'"? Data saat ini akan diganti.'))return;
-    DB=fix(d);flush();nl={cid:null,tab:'daftar',sh:null};sp={cid:null,used:[],remove:true,rot:0,spinning:false,winner:null,hist:[]};render();toast('Data berhasil dipulihkan')}
+    DB=fix(d);mergeSplit();flush();nl={cid:null,tab:'daftar',sh:null};sp={cid:null,used:[],remove:true,rot:0,spinning:false,winner:null,hist:[]};render();toast('Data berhasil dipulihkan')}
   catch(err){toast('File cadangan tidak valid',3500)}
 });
 
@@ -784,6 +811,7 @@ addEventListener('resize',()=>{if(view==='tools'&&tl==='spin'&&!sp.spinning)init
 
 /* ===================== Mulai ===================== */
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+mergeSplit();
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
 render();
 </script>
